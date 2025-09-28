@@ -4,4 +4,4 @@ project(disassembler CXX)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
-add_executable(disassembler main.cpp pe_parser.cpp)
+add_executable(disassembler main.cpp pe_parser.cpp x86_decoder.cpp)

@@ -50,6 +50,12 @@ struct IMAGE_FILE_HEADER {
     uint16_t Characteristics;      // File characteristics
 };
 
+// Data Directory (IMAGE_DATA_DIRECTORY)
+struct IMAGE_DATA_DIRECTORY {
+    uint32_t VirtualAddress;
+    uint32_t Size;
+};
+
 // Section Header (IMAGE_SECTION_HEADER)
 struct IMAGE_SECTION_HEADER {
     char     Name[8];             // Section name
@@ -96,6 +102,7 @@ struct IMAGE_OPTIONAL_HEADER32 {
     uint32_t SizeOfHeapCommit;
     uint32_t LoaderFlags;
     uint32_t NumberOfRvaAndSizes;
+    IMAGE_DATA_DIRECTORY DataDirectory[16]; // Array of 16 data directories
 };
 
 // Function declaration
