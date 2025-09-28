@@ -61,6 +61,41 @@ struct IMAGE_SECTION_HEADER {
     uint32_t Characteristics;
 };
 
+// Optional Header (IMAGE_OPTIONAL_HEADER) - for 32-bit executables (PE32)
+struct IMAGE_OPTIONAL_HEADER32 {
+    uint16_t Magic;
+    uint8_t  MajorLinkerVersion;
+    uint8_t  MinorLinkerVersion;
+    uint32_t SizeOfCode;
+    uint32_t SizeOfInitializedData;
+    uint32_t SizeOfUninitializedData;
+    uint32_t AddressOfEntryPoint;    // RVA of entry point
+    uint32_t BaseOfCode;
+    uint32_t BaseOfData;
+    uint32_t ImageBase;              // Preferred base address of the image when loaded
+    uint32_t SectionAlignment;
+    uint32_t FileAlignment;
+    uint16_t MajorOperatingSystemVersion;
+    uint16_t MinorOperatingSystemVersion;
+    uint16_t MajorImageVersion;
+    uint16_t MinorImageVersion;
+    uint16_t MajorSubsystemVersion;
+    uint16_t MinorSubsystemVersion;
+    uint32_t Win32VersionValue;
+    uint32_t SizeOfImage;
+    uint32_t SizeOfHeaders;
+    uint32_t CheckSum;
+    uint16_t Subsystem;
+    uint16_t DllCharacteristics;
+    uint32_t SizeOfStackReserve;
+    uint32_t SizeOfStackCommit;
+    uint32_t SizeOfHeapReserve;
+    uint32_t SizeOfHeapCommit;
+    uint32_t LoaderFlags;
+    uint32_t NumberOfRvaAndSizes;
+    // Data Directories follow, but we'll skip them for simplicity for now
+};
+
 void read_exe_header(const std::string& filepath) {
     std::ifstream file(filepath, std::ios::binary);
 
@@ -93,8 +128,16 @@ void read_exe_header(const std::string& filepath) {
     std::cout << "Файл: " << filepath << std::endl;
     std::cout << "Количество секций: " << file_header.NumberOfSections << std::endl;
 
-    // Skip Optional Header
-    file.seekg(file_header.SizeOfOptionalHeader, std::ios_base::cur);
+    // Read Optional Header
+    if (file_header.SizeOfOptionalHeader > 0) {
+        IMAGE_OPTIONAL_HEADER32 optional_header;
+        file.read(reinterpret_cast<char*>(&optional_header), sizeof(IMAGE_OPTIONAL_HEADER32));
+
+        std::cout << "\nOptional Header:" << std::endl;
+        std::cout << "  Адрес точки входа: 0x" << std::hex << optional_header.AddressOfEntryPoint << std::dec << std::endl;
+        std::cout << "  Базовый адрес образа: 0x" << std::hex << optional_header.ImageBase << std::dec << std::endl;
+        // You can add more fields from IMAGE_OPTIONAL_HEADER32 here
+    }
 
     std::cout << "\nСекции:" << std::endl;
     for (int i = 0; i < file_header.NumberOfSections; ++i) {
